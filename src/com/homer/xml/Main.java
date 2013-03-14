@@ -8,15 +8,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.homer.model.Answer;
 import com.homer.model.PostValue;
 import com.homer.model.Question;
 import com.homer.model.Surveys;
 import com.homer.util.PullxmlParser;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,32 +44,30 @@ import android.util.Log;
 public class Main extends Activity {
 
 	private static final String TAG = null;
-	private TextView tvXMLCreate;
-	private TextView tvXMLResolve;
 	
 	
-	//¶¨ÒåÏÔÊ¾µÄListÏà¹Ø±äÁ¿  
+	//å®šä¹‰æ˜¾ç¤ºçš„Listç›¸å…³å˜é‡  
     ListView list;  
-    ArrayAdapter<Surveys> adapter;  
+    ArrayAdapter<String> adapter;  
     ArrayList<Surveys> surveysEntryList; 
 	
 	StringBuffer stringBuffer;
 	
 	/** 
      *  
-     * @param urlPath ÇëÇóÂ·¾¶ 
-     * @param params MapÖĞkeyÎªÇëÇó²ÎÊı£¬valueÎªÇëÇó²ÎÊıµÄÖµ 
-     * @param encoding  ±àÂë·½Ê½ 
+     * @param urlPath è¯·æ±‚è·¯å¾„ 
+     * @param params Mapä¸­keyä¸ºè¯·æ±‚å‚æ•°ï¼Œvalueä¸ºè¯·æ±‚å‚æ•°çš„å€¼ 
+     * @param encoding  ç¼–ç æ–¹å¼ 
      * @return 
      * @throws Exception 
      */  
       
-    //Í¨¹ıpostÏò·şÎñÆ÷¶Ë·¢ËÍÊı¾İ£¬²¢»ñµÃ·şÎñÆ÷¶ËÊä³öÁ÷  
+    //é€šè¿‡postå‘æœåŠ¡å™¨ç«¯å‘é€æ•°æ®ï¼Œå¹¶è·å¾—æœåŠ¡å™¨ç«¯è¾“å‡ºæµ  
     public static InputStream getInputStreamByPost(String urlPath,Map<String,PostValue> params,String encoding) throws Exception{  
         StringBuffer sb = new StringBuffer(); 
         
-        SimpleDateFormat   formatter   =   new   SimpleDateFormat   ("yyyyÄêMMÔÂddÈÕ   HH:mm:ss     ");     
-        Date   curDate   =   new   Date(System.currentTimeMillis());//»ñÈ¡µ±Ç°Ê±¼ä     
+        SimpleDateFormat   formatter   =   new   SimpleDateFormat   ("yyyyå¹´MMæœˆddæ—¥   HH:mm:ss     ");     
+        Date   curDate   =   new   Date(System.currentTimeMillis());//è·å–å½“å‰æ—¶é—´     
         String   DateStr   =   formatter.format(curDate);    
        
         String userId = "<UserId>";
@@ -92,36 +96,36 @@ public class Main extends Activity {
         sb.append("</Answers>");
         String data = sb.deleteCharAt(sb.length()).toString();  
         URL url = new URL(urlPath);  
-        //´ò¿ªÁ¬½Ó  
+        //æ‰“å¼€è¿æ¥  
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();  
-        //ÉèÖÃÌá½»·½Ê½  
+        //è®¾ç½®æäº¤æ–¹å¼  
         conn.setDoOutput(true);  
         conn.setDoInput(true);  
         conn.setRequestMethod("POST");  
-        //post·½Ê½²»ÄÜÊ¹ÓÃ»º´æ  
+        //postæ–¹å¼ä¸èƒ½ä½¿ç”¨ç¼“å­˜  
         conn.setUseCaches(false);  
         conn.setInstanceFollowRedirects(true);  
-        //ÉèÖÃÁ¬½Ó³¬Ê±Ê±¼ä  
+        //è®¾ç½®è¿æ¥è¶…æ—¶æ—¶é—´  
         conn.setConnectTimeout(6*1000);  
-        //ÅäÖÃ±¾´ÎÁ¬½ÓµÄContent-Type£¬ÅäÖÃÎªapplication/x-www-form-urlencoded  
+        //é…ç½®æœ¬æ¬¡è¿æ¥çš„Content-Typeï¼Œé…ç½®ä¸ºapplication/x-www-form-urlencoded  
 //        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");  
-        //Î¬³Ö³¤Á¬½Ó  
+        //ç»´æŒé•¿è¿æ¥  
 //        conn.setRequestProperty("Connection", "Keep-Alive");  
-        //ÉèÖÃä¯ÀÀÆ÷±àÂë  
+        //è®¾ç½®æµè§ˆå™¨ç¼–ç   
         conn.setRequestProperty("Charset", "UTF-8");  
         DataOutputStream dos = new DataOutputStream(conn.getOutputStream());  
-        //½«ÇëÇó²ÎÊıÊı¾İÏò·şÎñÆ÷¶Ë·¢ËÍ  
+        //å°†è¯·æ±‚å‚æ•°æ•°æ®å‘æœåŠ¡å™¨ç«¯å‘é€  
         dos.writeBytes(data);  
         dos.flush();  
         dos.close();  
         if(conn.getResponseCode() == 200){  
-            //»ñµÃ·şÎñÆ÷¶ËÊä³öÁ÷  
+            //è·å¾—æœåŠ¡å™¨ç«¯è¾“å‡ºæµ  
             return conn.getInputStream();  
         }  
         return null;  
     }  
       
-    //Í¨¹ıÊäÈëÁ÷»ñµÃ×Ö½ÚÊı×é  
+    //é€šè¿‡è¾“å…¥æµè·å¾—å­—èŠ‚æ•°ç»„  
     public static byte[] readStream(InputStream is) throws Exception {  
         byte[] buffer = new byte[1024];  
         ByteArrayOutputStream bos = new ByteArrayOutputStream();  
@@ -133,8 +137,9 @@ public class Main extends Activity {
         return bos.toByteArray();  
     }
     
+
 	
-	//»ñÈ¡±¾»úµÄIPµØÖ·
+	//è·å–æœ¬æœºçš„IPåœ°å€
 	public String getLocalIpAddress() {  
         try {  
             for (Enumeration<NetworkInterface> en = NetworkInterface  
@@ -154,10 +159,10 @@ public class Main extends Activity {
         return null;  
     } 
 	
-	//´ÓÍøÂçÉÏ»ñÈ¡ÊµÊ±µØÕğÊı¾İ
+	//ä»ç½‘ç»œä¸Šè·å–å®æ—¶åœ°éœ‡æ•°æ®
 	private InputStream readSurveysDataFromInternet()  
     {  
-        //´ÓÍøÂçÉÏ»ñÈ¡ÊµÊ±µØÕğÊı¾İ  
+        //ä»ç½‘ç»œä¸Šè·å–å®æ—¶åœ°éœ‡æ•°æ®  
         URL infoUrl = null;  
         InputStream inStream = null;  
         try {  
@@ -179,10 +184,10 @@ public class Main extends Activity {
         return inStream;  
     }  
 	
-	//´Ó±¾µØ»ñÈ¡µØÕğÊı¾İ  
+	//ä»æœ¬åœ°è·å–åœ°éœ‡æ•°æ®  
 	private InputStream readSurveysDataFromFile()  
     {  
-        //´Ó±¾µØ»ñÈ¡µØÕğÊı¾İ  
+        //ä»æœ¬åœ°è·å–åœ°éœ‡æ•°æ®  
         InputStream inStream = null;  
         try {  
             inStream = this.getAssets().open("test.xml");  
@@ -198,47 +203,74 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		//1¡¢ÕâÀï¸ù¾İÎÊ¾íµÄÊıÁ¿ÓÃÁĞ±íÏÔÊ¾£¬µã»÷ÁĞ±íÄ³Ò»ĞĞ½øÈëÄ³Ò»¸öÎÊ¾í£¬È»ºó½øĞĞÑ¡Ôñ
-		//»ñÈ¡µØÕğÊı¾İÁ÷  
+		//1ã€è¿™é‡Œæ ¹æ®é—®å·çš„æ•°é‡ç”¨åˆ—è¡¨æ˜¾ç¤ºï¼Œç‚¹å‡»åˆ—è¡¨æŸä¸€è¡Œè¿›å…¥æŸä¸€ä¸ªé—®å·ï¼Œç„¶åè¿›è¡Œé€‰æ‹©
+		//è·å–åœ°éœ‡æ•°æ®æµ  
         InputStream surveysStream = readSurveysDataFromFile();  
-        //Pull·½Ê½½øĞĞxml½âÎö  
+        //Pullæ–¹å¼è¿›è¡Œxmlè§£æ  
         PullxmlParser pullHandler = new PullxmlParser();  
         surveysEntryList = pullHandler.SurveysXmlParser(surveysStream);  
         
         
+        
+        List<String> EntryList =new ArrayList<String>();
         for (int i = 0; i < surveysEntryList.size(); i ++) {
         	Surveys temp = surveysEntryList.get(i);
-        	String tttString =  temp.getSurveyID();
-        	String aaaString =  temp.getSurveyName();
+        	Question question1 = temp.aQuestionList.get(0);
+        	Answer answer1 = question1.answerList.get(0);
+        	EntryList.add(surveysEntryList.get(i).getSurveyName());
         }
-        //ÕâÀï³öÏÖ¶à¸ö½âÎö´íÎó
         
         
-        //ÓÃListView½øĞĞÏÔÊ¾  
+        
         list = (ListView)this.findViewById(R.id.list);  
-        adapter = new ArrayAdapter<Surveys>(this, android.R.layout.simple_list_item_1, surveysEntryList);  
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, EntryList);  
         list.setAdapter(adapter);  
-	    //ÊµÏÖÏÔÊ¾¹¦ÄÜ
+        list.setOnItemClickListener(new OnItemClickListener(){ 
+            @Override 
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, 
+                    long arg3) {
+            	Intent intent = new Intent();  
+                intent.setClass(Main.this, QuestionList.class);
+                //è¿™é‡Œè‡ªå®šä¹‰ä¸€ä¸ªç±»ä¼¼æ¨è¿›çš„è·³è½¬æ•ˆæœ
+                startActivity(intent);
+            }             
+        });
+//        StringBuffer stringBuffer = null;  
+//        
+//        for (int i = 0; i < surveysEntryList.size(); i ++) {
+//        	Surveys temp = surveysEntryList.get(i);
+//        	String tttString =  temp.getSurveyID();
+//        	String aaaString =  temp.getSurveyName();
+//        	stringBuffer.append(temp.getSurveyName()).append(temp.getSurveyID());
+//        }
+//        //è¿™é‡Œå‡ºç°å¤šä¸ªè§£æé”™è¯¯
+//        
+//        
+//        //ç”¨ListViewè¿›è¡Œæ˜¾ç¤º  
+//        list = (ListView)this.findViewById(R.id.list);  
+//        adapter = new ArrayAdapter<Surveys>(this, android.R.layout.simple_list_item_1, surveysEntryList);  
+//        list.setAdapter(adapter);  
+	    //å®ç°æ˜¾ç¤ºåŠŸèƒ½
 	    
-		//2¡¢ÏÈÏÔÊ¾ËùÓĞµ¥Ñ¡Ìâ¡£Options  Îª0£¨µ¥Ñ¡¿ò£©
+		//2ã€å…ˆæ˜¾ç¤ºæ‰€æœ‰å•é€‰é¢˜ã€‚Options  ä¸º0ï¼ˆå•é€‰æ¡†ï¼‰
 		
 		
-		//3¡¢ÔÙÏÔÊ¾ËùÓĞ¶àÑ¡Ìâ¡£Options  Îª1£¨¶àÑ¡¿ò£©
+		//3ã€å†æ˜¾ç¤ºæ‰€æœ‰å¤šé€‰é¢˜ã€‚Options  ä¸º1ï¼ˆå¤šé€‰æ¡†ï¼‰
 		
 		
-		//4¡¢ÔÙÏÔÊ¾ÁôÑÔÌâ¡£Options  Îª2£¨ÎÄ±¾ÁôÑÔ£©
+		//4ã€å†æ˜¾ç¤ºç•™è¨€é¢˜ã€‚Options  ä¸º2ï¼ˆæ–‡æœ¬ç•™è¨€ï¼‰
 		
 		
-		//5¡¢Ñ¡ÔñÒ»Ìâ¾ÍÇĞ»»µ½ÏÂÒ»Ìâ£¬µ½×îºóÒ»Ìâ¾ÍÌáÊ¾Ìá½»´ğ°¸£¨ÇĞ»»ºÍÌá½»°´Å¥£©
+		//5ã€é€‰æ‹©ä¸€é¢˜å°±åˆ‡æ¢åˆ°ä¸‹ä¸€é¢˜ï¼Œåˆ°æœ€åä¸€é¢˜å°±æç¤ºæäº¤ç­”æ¡ˆï¼ˆåˆ‡æ¢å’Œæäº¤æŒ‰é’®ï¼‰
 		
 		
-		//6¡¢°ÑÓÃ»§Ñ¡ÔñºÃµÄ´ğ°¸ID»òÕßÁôÑÔÄÚÈİÉÏ´«µ½·şÎñÆ÷£¬ÒÔxmlÎÄ¼ş¸ñÊ½£¨ĞèÒª×éÖ¯Îªxml¸ñÊ½£©£¬Ìá½»Íê¾Í·µ»ØÎÊ¾íÁĞ±í
+		//6ã€æŠŠç”¨æˆ·é€‰æ‹©å¥½çš„ç­”æ¡ˆIDæˆ–è€…ç•™è¨€å†…å®¹ä¸Šä¼ åˆ°æœåŠ¡å™¨ï¼Œä»¥xmlæ–‡ä»¶æ ¼å¼ï¼ˆéœ€è¦ç»„ç»‡ä¸ºxmlæ ¼å¼ï¼‰ï¼Œæäº¤å®Œå°±è¿”å›é—®å·åˆ—è¡¨
 //		Map<String, PostValue> map= new HashMap<String, PostValue>();
-//		//ÕâÀïÓÃforÑ­»·µÃµ½Êı×éÀïÃæµÄËùÓĞÔªËØ
+//		//è¿™é‡Œç”¨forå¾ªç¯å¾—åˆ°æ•°ç»„é‡Œé¢çš„æ‰€æœ‰å…ƒç´ 
 //		PostValue quetion = new PostValue();
 //		map.put("question", quetion);
-//		//·şÎñÆ÷ÇëÇóÂ·¾¶  
-//        String urlPath = "http://ipµØÖ·:8080";  
+//		//æœåŠ¡å™¨è¯·æ±‚è·¯å¾„  
+//        String urlPath = "http://ipåœ°å€:8080";  
 //        InputStream is = null;
 //		try {
 //			is = getInputStreamByPost(urlPath, map, "UTF-8");
@@ -254,7 +286,7 @@ public class Main extends Activity {
 //			e1.printStackTrace();
 //		}  
 //        Log.i(TAG, new String(data));
-        //ÕâÀïĞèÒªÅĞ¶ÏÊÇ·ñÉÏ´«³É¹¦
+        //è¿™é‡Œéœ€è¦åˆ¤æ–­æ˜¯å¦ä¸Šä¼ æˆåŠŸ
 		//6
         
         

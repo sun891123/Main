@@ -14,7 +14,7 @@ import com.homer.model.Answer;
 
 public class PullxmlParser {
 
-	//xmlΩ‚Œˆ”√µΩµƒTag  
+	//xmlËß£ÊûêÁî®Âà∞ÁöÑTag  
     private String kSurveyElementName = "Survey";  
     private String kSurveyNameElementName = "SurveyName"; 
     private String kSurveyIDElementName = "SurveyID"; 
@@ -28,7 +28,7 @@ public class PullxmlParser {
     private String kAnswerIDElementName = "AnswerID";  
     private String kAnswerContentElementName = "AnswerContent";  
     
-    //”√”⁄±£¥ÊxmlΩ‚ŒˆªÒ»°µƒΩ·π˚
+    //Áî®‰∫é‰øùÂ≠òxmlËß£ÊûêËé∑ÂèñÁöÑÁªìÊûú
     private Answer mAnswer = null;
     
 	private ArrayList<Question> mQuestionList = null;
@@ -50,7 +50,8 @@ public class PullxmlParser {
 			int mEvtentType = xmlPullParser.getEventType();
 			Boolean isDone = false;
 			
-			while ((mEvtentType != XmlPullParser.END_DOCUMENT)&&(isDone != true)) {
+			while ((mEvtentType != XmlPullParser.END_DOCUMENT)
+					&& (isDone != true)) {
 				String DocumentCode = null;
 				switch (mEvtentType) {
 
@@ -58,64 +59,76 @@ public class PullxmlParser {
 					mSurveyList = new ArrayList<Surveys>();
 					break;
 				case XmlPullParser.START_TAG:
-					
+
 					DocumentCode = xmlPullParser.getName();
 					System.out.println("DocumentCode:" + DocumentCode);
 
-					if (DocumentCode.equalsIgnoreCase(kSurveyElementName)) {
-						Log.e("Survey", "Survey");
-						mSurvey = new Surveys();
-						startEntryElementFlag = true;  
+					if (DocumentCode.equals(kSurveyElementName)) {
+						Log.e("Survey=========", "Survey");
+						// mSurvey = new Surveys();
+						startEntryElementFlag = true;
 					} else if (startEntryElementFlag == true) {
-						String currentData = null;  
-                        if(DocumentCode.equalsIgnoreCase(kSurveyNameElementName))  
-                        {  
-                            currentData = xmlPullParser.nextText();  
-//                          Log.v("Pull", currentData);  
-                            //Ã·»°Œ æÌid
-                            mSurvey.setSurveyName(currentData);
-                        } else if (DocumentCode.equalsIgnoreCase(kSurveyIDElementName)) {
-                        	currentData = xmlPullParser.nextText();
+						String currentData = null;
+						if (DocumentCode.equals(kSurveyNameElementName)) {
+							mSurvey = new Surveys();
+							currentData = xmlPullParser.nextText();
+							Log.v("Pull", currentData);
+							// √É¬∑¬ª¬∞≈í¬†√¶√åid
+							mSurvey.setSurveyName(currentData);
+						} else if (DocumentCode
+								.equalsIgnoreCase(kSurveyIDElementName)) {
+							currentData = xmlPullParser.nextText();
 							mSurvey.setSurveyID(currentData);
-						} else if (DocumentCode.equalsIgnoreCase(kQuestionListElementName)) {
-							mSurvey.QuestionList = new ArrayList<Question>();
+						} else if (DocumentCode
+								.equalsIgnoreCase(kQuestionListElementName)) {
+							mSurvey.aQuestionList = new ArrayList<Question>();
 							break;
-						} else if (DocumentCode.equalsIgnoreCase(kQuestionElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kQuestionElementName)) {
 							mQuestion = new Question();
 							break;
-						} else if (DocumentCode.equalsIgnoreCase(kQuestionIDElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kQuestionIDElementName)) {
 							currentData = xmlPullParser.nextText();
 							mQuestion.setQuestionID(currentData);
-						} else if (DocumentCode.equalsIgnoreCase(kQuestionContentElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kQuestionContentElementName)) {
 							currentData = xmlPullParser.nextText();
 							mQuestion.setQuestionContent(currentData);
-						} else if (DocumentCode.equalsIgnoreCase(kOptionsElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kOptionsElementName)) {
 							currentData = xmlPullParser.nextText();
 							mQuestion.setOptions(currentData);
-						} else if (DocumentCode.equalsIgnoreCase(kAnswerListElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kAnswerListElementName)) {
 							mQuestion.answerList = new ArrayList<Answer>();
 							break;
-						} else if (DocumentCode.equalsIgnoreCase(kAnswerElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kAnswerElementName)) {
 							mAnswer = new Answer();
 							break;
-						} else if (DocumentCode.equalsIgnoreCase(kAnswerIDElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kAnswerIDElementName)) {
 							currentData = xmlPullParser.nextText();
 							mAnswer.setAnswerID(currentData);
-						} else if (DocumentCode.equalsIgnoreCase(kAnswerContentElementName)) {
+						} else if (DocumentCode
+								.equalsIgnoreCase(kAnswerContentElementName)) {
 							currentData = xmlPullParser.nextText();
 							mAnswer.setAnswerContent(currentData);
 						}
 					}
 				case XmlPullParser.END_TAG:
-					if (xmlPullParser.getName().equalsIgnoreCase(kSurveyElementName)) {
-						Log.e("End", "End    End   End");
+					if (xmlPullParser.getName().equals(kSurveyNameElementName)) {
+						Log.e("Endd======", "End    End   End");
 						System.out.println("End");
 						mSurveyList.add(mSurvey);
 					}
-					if (xmlPullParser.getName().equalsIgnoreCase(kQuestionListElementName)) {
-						mSurvey.QuestionList.add(mQuestion);
+					if (xmlPullParser.getName().equalsIgnoreCase(
+							kQuestionElementName)) {
+						mSurvey.aQuestionList.add(mQuestion);
 					}
-					if (xmlPullParser.getName().equalsIgnoreCase(kAnswerListElementName)) {
+					if (xmlPullParser.getName().equalsIgnoreCase(
+							kAnswerElementName)) {
 						mQuestion.answerList.add(mAnswer);
 					}
 					break;

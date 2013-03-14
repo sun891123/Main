@@ -1,5 +1,15 @@
 package com.homer.xml;
 
-public class LeaveAMessage {
+import android.app.Activity;
+import android.os.Bundle;
 
+public class LeaveAMessage extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+	}
+
+	
 }

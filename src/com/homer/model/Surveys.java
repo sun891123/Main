@@ -6,7 +6,7 @@ public class Surveys {
 	
 	private String SurveyName;
 	private String SurveyID;
-	public  ArrayList<Question> QuestionList;
+	public  ArrayList<Question> aQuestionList;
 	
 	
 	public String getSurveyName() {
@@ -22,10 +22,10 @@ public class Surveys {
 		SurveyID = surveyID;
 	}
 	public ArrayList<Question> getQuestionList() {
-		return QuestionList;
+		return aQuestionList;
 	}
 	public void setQuestionList(ArrayList<Question> questionList) {
-		QuestionList = questionList;
+		aQuestionList = questionList;
 	}
 	
 }
