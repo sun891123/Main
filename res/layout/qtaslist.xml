@@ -11,4 +11,9 @@
             android:layout_height="wrap_content"
         android:layout_marginLeft="5dip"  />
 
+        <ListView
+    		android:id="@+id/questionlist"
+    		android:layout_width="fill_parent"
+   		 android:layout_height="fill_parent"
+  		/>
 </LinearLayout>
