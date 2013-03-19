@@ -35,9 +35,13 @@ public class QuestionList extends Activity {
 		// TODO Auto-generated method stub
 		//这里是暂时问题的列表Activiti
 		super.onCreate(savedInstanceState);
+		
+		//获取问卷传过来的所有问题，然后进行显示
+		Intent intent = new Intent();
+		intent.getExtras();
+		
 		setContentView(R.layout.qtaslist);
 		questionListView = (ListView)findViewById(R.id.questionlist);
-		
 		
 		TextView tx = (TextView) this.findViewById(R.id.txView);
 		tx.setText("我来到答题界面了");

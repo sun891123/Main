@@ -101,6 +101,7 @@ public class Main extends Activity {
                     long arg3) {
             	//点击item跳转到答题页面
             	Intent intent = new Intent();  
+            	intent.putExtra("surveys", surveysEntryList.get(arg2));
                 intent.setClass(Main.this, QuestionList.class);
                 //这里自定义一个类似推进的跳转效果
                 startActivity(intent);

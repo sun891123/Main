@@ -70,7 +70,7 @@ public class PullxmlParser {
 					} else if (startEntryElementFlag == true) {
 						String currentData = null;
 						if (DocumentCode.equals(kSurveyNameElementName)) {
-							mSurvey = new Surveys();
+							mSurvey = new Surveys(null);
 							currentData = xmlPullParser.nextText();
 							Log.v("Pull", currentData);
 							// Ã·»°Œ æÌid
