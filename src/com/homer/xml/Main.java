@@ -80,7 +80,6 @@ public class Main extends Activity {
 		//1、这里根据问卷的数量用列表显示，点击列表某一行进入某一个问卷，然后进行选择
 		//获取问卷数据流  
         InputStream surveysStream = readSurveysDataFromFile();
-        surveysStream = readSurveysDataFromInternet();
         //Pull方式进行xml解析  
         PullxmlParser pullHandler = new PullxmlParser();  
         surveysEntryList = pullHandler.SurveysXmlParser(surveysStream);  
