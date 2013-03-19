@@ -16,9 +16,11 @@ public class MultipleChoice extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		//这里是多选
 	}
 
 	public void setUpQuestion(Question mQuestion) {
+		//这里是多选题
 		final CheckBox checkBoxButton = new CheckBox(null);
 		checkBoxButton.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener()  
 	    {  

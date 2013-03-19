@@ -33,6 +33,7 @@ public class QuestionList extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		//这里是暂时问题的列表Activiti
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.qtaslist);
 		questionListView = (ListView)findViewById(R.id.questionlist);

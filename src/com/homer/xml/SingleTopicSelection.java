@@ -13,6 +13,7 @@ public class SingleTopicSelection extends Activity {
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//这里是单选题目
 	}
 
 	public void setUpQuestion(Question mQuestion) {
