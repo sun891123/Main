@@ -15,23 +15,18 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.homer.model.Answer;
 import com.homer.model.PostValue;
 import com.homer.model.Question;
 import com.homer.model.Surveys;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
+
+import com.homer.xml.SingleTopicSelection;
 
 public class QuestionList extends Activity {
 
@@ -39,6 +34,11 @@ public class QuestionList extends Activity {
 	private ListView questionListView;
 	RadioGroup radioGroup;
 	Context context = QuestionList.this;
+	ArrayList<Question> sigleArrayList = null;
+	ArrayList<Question> doubleArrayList = null;
+	ArrayList<Question> messageArrayList = null;
+	public String userIdString;
+	public String userNamesString;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +48,56 @@ public class QuestionList extends Activity {
 		setContentView(R.layout.qtaslist);
 		questionListView = (ListView)findViewById(R.id.questionlist);
 		//获取问卷传过来的所有问题，然后进行显示
-		Surveys temp_survey = (Surveys)getIntent().getSerializableExtra("survey");
-		
-		RadioGroup radioGroup = (RadioGroup)findViewById(R.id.mentaltest_rg_subject);
-		for (int i = 0; i < temp_survey.aQuestionList.size(); i ++) {
-			Question aQuestion = temp_survey.aQuestionList.get(i);
-			for (int j = 0; j < aQuestion.answerList.size(); j ++) {
-				Answer aAnswer = aQuestion.answerList.get(j);
-				RadioButton radioButton = new RadioButton(context);
-				radioButton.setText(aAnswer.getAnswerContent());
-				radioGroup.addView(radioButton);
+		Surveys survey = (Surveys)getIntent().getSerializableExtra("survey");
+		sigleArrayList = new ArrayList<Question>();
+		doubleArrayList = new ArrayList<Question>();
+		messageArrayList = new ArrayList<Question>();
+		for (int i = 0; i < survey.aQuestionList.size(); i ++) {
+			Question aQuestion = survey.aQuestionList.get(i);
+			if (aQuestion.getOptions().equalsIgnoreCase("0")) {
+				sigleArrayList.add(aQuestion);
+			} else if (aQuestion.getOptions().equalsIgnoreCase("1")) {
+				doubleArrayList.add(aQuestion);
+			} else if (aQuestion.getOptions().equalsIgnoreCase("2")) {
+				messageArrayList.add(aQuestion);
 			}
 		}
+		
+		for (int i = 0; i < sigleArrayList.size(); i ++) {
+			//这里创建单选的SingleTopicSelection
+		}
+		
+		for (int i = 0; i < doubleArrayList.size(); i ++) {
+			//这里创建单选的MultipleChoice
+		}
+		
+		for (int i = 0; i < messageArrayList.size(); i ++) {
+			//这里创建单选的Message,用EditView直接显示
+		}
+		
+		
+		
+		//2、先显示所有单选题。Options  为0（单选框）
+		
+		
+		//3、再显示所有多选题。Options  为1（多选框）
+				
+				
+		//4、再显示留言题。Options  为2（文本留言）
+				
+				
+		//5、选择一题就切换到下一题，到最后一题就提示提交答案（切换和提交按钮）
+		
+		
+		//记录用什么方式？
+		
+		//然后把记录好的id和文本上传到服务器
+		
+		
+		
+		
+		
+		
 		
 		
 		
@@ -91,25 +129,29 @@ public class QuestionList extends Activity {
 	}
 	
 	
+	
+	
+	
+	
 	//获取本机的IP地址
-		public String getLocalIpAddress() {  
-	        try {  
-	            for (Enumeration<NetworkInterface> en = NetworkInterface  
-	                    .getNetworkInterfaces(); en.hasMoreElements();) {  
-	                NetworkInterface intf = en.nextElement();  
-	                for (Enumeration<InetAddress> enumIpAddr = intf  
-	                        .getInetAddresses(); enumIpAddr.hasMoreElements();) {  
-	                    InetAddress inetAddress = enumIpAddr.nextElement();  
-	                    if (!inetAddress.isLoopbackAddress()) {  
-	                        return inetAddress.getHostAddress().toString();  
-	                    }  
-	                }  
-	            }  
-	        } catch (SocketException ex) {  
-	            Log.e("WifiPreference IpAddress", ex.toString());  
-	        }  
-	        return null;  
-	    } 
+	public String getLocalIpAddress() {  
+        try {  
+            for (Enumeration<NetworkInterface> en = NetworkInterface  
+                    .getNetworkInterfaces(); en.hasMoreElements();) {  
+                NetworkInterface intf = en.nextElement();  
+                for (Enumeration<InetAddress> enumIpAddr = intf  
+                        .getInetAddresses(); enumIpAddr.hasMoreElements();) {  
+                    InetAddress inetAddress = enumIpAddr.nextElement();  
+                    if (!inetAddress.isLoopbackAddress()) {  
+                        return inetAddress.getHostAddress().toString();  
+                    }  
+                }  
+            }  
+        } catch (SocketException ex) {  
+            Log.e("WifiPreference IpAddress", ex.toString());  
+        }  
+        return null;  
+    } 
 	
 	/** 
      *  

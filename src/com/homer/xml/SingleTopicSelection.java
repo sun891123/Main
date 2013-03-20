@@ -1,5 +1,6 @@
 package com.homer.xml;
 
+import com.homer.model.Answer;
 import com.homer.model.Question;
 
 import android.app.Activity;
@@ -14,16 +15,16 @@ public class SingleTopicSelection extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//这里是单选题目
+		setContentView(R.id.siglement_rg_subject);
 	}
 
 	public void setUpQuestion(Question mQuestion) {
-		RadioGroup radioGroup = new RadioGroup(context);
-		//for in
-		RadioButton radioButton = new RadioButton(context);
-//		radioButton.setId(i);
-		radioButton.setText("hahahahah");
-		radioGroup.addView(radioButton);
-		
+		RadioGroup radioGroup = (RadioGroup)findViewById(R.id.siglement_rg_subject);
+		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
+			Answer aAnswer = mQuestion.answerList.get(j);
+			RadioButton radioButton = new RadioButton(context);
+			radioButton.setText(aAnswer.getAnswerContent());
+			radioGroup.addView(radioButton);
+		}
 	}
-	
 }

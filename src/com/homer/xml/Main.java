@@ -106,16 +106,5 @@ public class Main extends Activity {
                 startActivity(intent);
             }             
         });
-	    
-		//2、先显示所有单选题。Options  为0（单选框）
-		
-		
-		//3、再显示所有多选题。Options  为1（多选框）
-		
-		
-		//4、再显示留言题。Options  为2（文本留言）
-		
-		
-		//5、选择一题就切换到下一题，到最后一题就提示提交答案（切换和提交按钮）
 	}
 }
