@@ -15,40 +15,53 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.homer.model.Answer;
 import com.homer.model.PostValue;
+import com.homer.model.Question;
 import com.homer.model.Surveys;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class QuestionList extends Activity {
 
 	private static final String TAG = null;
 	private ListView questionListView;
+	RadioGroup radioGroup;
+	Context context = QuestionList.this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		//这里是暂时问题的列表Activiti
 		super.onCreate(savedInstanceState);
-		
-		//获取问卷传过来的所有问题，然后进行显示
-//		Intent intent = new Intent();
-//		intent.getExtras();
-		Surveys temp_survey = (Surveys)getIntent().getSerializableExtra("survey");
-		String temp = temp_survey.getSurveyName();
-		
-		
 		setContentView(R.layout.qtaslist);
 		questionListView = (ListView)findViewById(R.id.questionlist);
+		//获取问卷传过来的所有问题，然后进行显示
+		Surveys temp_survey = (Surveys)getIntent().getSerializableExtra("survey");
 		
-		TextView tx = (TextView) this.findViewById(R.id.txView);
-		tx.setText("我来到答题界面了");
+		RadioGroup radioGroup = (RadioGroup)findViewById(R.id.mentaltest_rg_subject);
+		for (int i = 0; i < temp_survey.aQuestionList.size(); i ++) {
+			Question aQuestion = temp_survey.aQuestionList.get(i);
+			for (int j = 0; j < aQuestion.answerList.size(); j ++) {
+				Answer aAnswer = aQuestion.answerList.get(j);
+				RadioButton radioButton = new RadioButton(context);
+				radioButton.setText(aAnswer.getAnswerContent());
+				radioGroup.addView(radioButton);
+			}
+		}
+		
+		
 		
 		//6、把用户选择好的答案ID或者留言内容上传到服务器，以xml文件格式（需要组织为xml格式），提交完就返回问卷列表
 //		Map<String, PostValue> map= new HashMap<String, PostValue>();

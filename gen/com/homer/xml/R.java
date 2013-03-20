@@ -15,8 +15,10 @@ public final class R {
     }
     public static final class id {
         public static final int list=0x7f050000;
-        public static final int questionlist=0x7f050002;
-        public static final int txView=0x7f050001;
+        public static final int mentaltest_rb_item1=0x7f050002;
+        public static final int mentaltest_rb_item2=0x7f050003;
+        public static final int mentaltest_rg_subject=0x7f050001;
+        public static final int questionlist=0x7f050004;
     }
     public static final class layout {
         public static final int main=0x7f030000;
