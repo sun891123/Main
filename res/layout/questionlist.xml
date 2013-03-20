@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <Button
+        android:id="@+id/prvatebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/prvate" />
+
+    <Button
+        android:id="@+id/nextbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/next" />
+    
+    <TextView android:id="@+id/questioncontent"
+        android:paddingLeft="15dip" android:paddingRight="15dip"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+    </TextView>
+    
+    <RadioGroup android:id="@+id/siglement_rg_subject"
+			android:paddingLeft="15dip" android:paddingRight="15dip"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+		</RadioGroup>
+    
+</LinearLayout>

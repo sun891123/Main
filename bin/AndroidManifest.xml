@@ -24,6 +24,9 @@
         <activity
             android:name=".QuestionList">
         </activity>
+        <activity
+            android:name=".SurveyList">
+        </activity>
         
     </application>
 

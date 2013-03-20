@@ -3,6 +3,7 @@ package com.homer.xml;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -19,20 +20,26 @@ import com.homer.model.PostValue;
 import com.homer.model.Question;
 import com.homer.model.Surveys;
 
+import android.R.bool;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ListView;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.homer.xml.SingleTopicSelection;
+import com.homer.model.Answer;
+import com.homer.model.PostValue;
 
 public class QuestionList extends Activity {
 
 	private static final String TAG = null;
-	private ListView questionListView;
-	RadioGroup radioGroup;
+	private int index;
 	Context context = QuestionList.this;
 	ArrayList<Question> sigleArrayList = null;
 	ArrayList<Question> doubleArrayList = null;
@@ -40,13 +47,20 @@ public class QuestionList extends Activity {
 	public String userIdString;
 	public String userNamesString;
 	
+	
+	private ArrayList<PostValue> postArray = null;
+	PostValue postValue = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		//这里是暂时问题的列表Activiti
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.qtaslist);
-		questionListView = (ListView)findViewById(R.id.questionlist);
+		setContentView(R.layout.questionlist);
+		
+		postArray = new ArrayList<PostValue>();;
+		index = 0;
+		
 		//获取问卷传过来的所有问题，然后进行显示
 		Surveys survey = (Surveys)getIntent().getSerializableExtra("survey");
 		sigleArrayList = new ArrayList<Question>();
@@ -63,21 +77,82 @@ public class QuestionList extends Activity {
 			}
 		}
 		
-		for (int i = 0; i < sigleArrayList.size(); i ++) {
-			//这里创建单选的SingleTopicSelection
-		}
+		//下一题按钮的动作
+		Button nextButton = (Button)findViewById(R.id.nextbutton);
+		nextButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				//1、先显示所有单选题。Options  为0（单选框）
+				if (index < sigleArrayList.size()) {
+					Question mQuestion=sigleArrayList.get(index);
+					TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
+					questionContentTextView.setText(mQuestion.getQuestionContent());
+					RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+					postValue = new PostValue();
+					postValue.setOptions(mQuestion.getOptions());
+					postValue.setQuestionIdString(mQuestion.getQuestionID());
+					postValue.answersArray = new ArrayList<String>();
+					String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
+					postValue.answersArray.add(seletcs);
+					postArray.add(postValue);
+					radioGroup.clearCheck();
+					radioGroup.removeAllViews();
+					for (int j = 0; j < mQuestion.answerList.size(); j ++) {
+						Answer aAnswer = mQuestion.answerList.get(j);
+						RadioButton radioButton = new RadioButton(context);
+						radioButton.setId(j);
+						radioButton.setText(aAnswer.getAnswerContent());
+						radioGroup.addView(radioButton);
+					}
+				} else if (index >= sigleArrayList.size() && index < doubleArrayList.size()) {
+				} else if (index >= doubleArrayList.size() && index < messageArrayList.size()) {
+				}
+				index ++;
+				
+				
+				//上一题的按钮
+				Button prvatButton = (Button)findViewById(R.id.prvatebutton);
+				if (index == 0) {
+				} else if (index == sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size()) {
+					prvatButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							//组织post的xml，然后异步上传
+						}
+					});
+				} else {
+					prvatButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							index --;
+							// TODO Auto-generated method stub
+							//如果当前是单选的话
+							if (index < sigleArrayList.size()) {
+								RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+								radioGroup.removeAllViews();
+								Question mQuestion=sigleArrayList.get(index);
+								for (int j = 0; j < mQuestion.answerList.size(); j ++) {
+									Answer aAnswer = mQuestion.answerList.get(j);
+									RadioButton radioButton = new RadioButton(context);
+									radioButton.setText(aAnswer.getAnswerContent());
+									radioGroup.addView(radioButton);
+								}
+							} else if (index >= sigleArrayList.size() && index < doubleArrayList.size()) {
+								//如果当前是多选的话
+							} else if (index >= doubleArrayList.size() && index < messageArrayList.size()) {
+								//如果当前是留言的话
+							}
+						}
+					});
+				}
+			}
+		});		
 		
-		for (int i = 0; i < doubleArrayList.size(); i ++) {
-			//这里创建单选的MultipleChoice
-		}
-		
-		for (int i = 0; i < messageArrayList.size(); i ++) {
-			//这里创建单选的Message,用EditView直接显示
-		}
-		
-		
-		
-		//2、先显示所有单选题。Options  为0（单选框）
+				
 		
 		
 		//3、再显示所有多选题。Options  为1（多选框）
@@ -181,17 +256,17 @@ public class QuestionList extends Activity {
         
         for(Map.Entry<String,PostValue> entry:params.entrySet()){
         	PostValue tempPostValue = entry.getValue();
-        	if (tempPostValue.getOptions().equals("0")) {
-        		sb.append("<Question ").append("Questionid=\"%@\">").append("<Answer>").append(tempPostValue.getAnswers().indexOf(0)).append("</Answer>").append("</Question>");
-        	} else if (tempPostValue.getOptions().equals("1")) {
-        		sb.append("<Question ").append("Questionid=\"%@\">");
-				for (int i = 0; i < tempPostValue.getAnswers().size(); i ++) {
-					sb.append("<Answer>").append(tempPostValue.getAnswers().indexOf(i)).append("</Answer>");
-				}
-				sb.append("<Question ").append("</Question>");
-			} else if (tempPostValue.getOptions().equals("2")) {
-				sb.append("<Question ").append("Questionid=\"%@\">").append("<Answer ").append("type=\"text\">%@").append("</Answer>").append("</Question>");
-			}
+//        	if (tempPostValue.getOptions().equals("0")) {
+//        		sb.append("<Question ").append("Questionid=\"%@\">").append("<Answer>").append(tempPostValue.getAnswers().indexOf(0)).append("</Answer>").append("</Question>");
+//        	} else if (tempPostValue.getOptions().equals("1")) {
+//        		sb.append("<Question ").append("Questionid=\"%@\">");
+//				for (int i = 0; i < tempPostValue.getAnswers().size(); i ++) {
+//					sb.append("<Answer>").append(tempPostValue.getAnswers().indexOf(i)).append("</Answer>");
+//				}
+//				sb.append("<Question ").append("</Question>");
+//			} else if (tempPostValue.getOptions().equals("2")) {
+//				sb.append("<Question ").append("Questionid=\"%@\">").append("<Answer ").append("type=\"text\">%@").append("</Answer>").append("</Question>");
+//			}
         }
         sb.append("</Answers>");
         String data = sb.deleteCharAt(sb.length()).toString();  
@@ -237,4 +312,16 @@ public class QuestionList extends Activity {
         return bos.toByteArray();  
     }
 
+    public String getUserIdString() {
+		return userIdString;
+	}
+	public void setUserIdString(String userIdString) {
+		this.userIdString = userIdString;
+	}
+	public String getUserNamesString() {
+		return userNamesString;
+	}
+	public void setUserNamesString(String userNamesString) {
+		this.userNamesString = userNamesString;
+	}
 }
