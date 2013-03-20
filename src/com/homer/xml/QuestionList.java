@@ -89,12 +89,14 @@ public class QuestionList extends Activity {
 					TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
 					questionContentTextView.setText(mQuestion.getQuestionContent());
 					RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+					//进行上次选择的记录
 					postValue = new PostValue();
 					postValue.setOptions(mQuestion.getOptions());
 					postValue.setQuestionIdString(mQuestion.getQuestionID());
 					postValue.answersArray = new ArrayList<String>();
 					String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
 					postValue.answersArray.add(seletcs);
+					//然后用数组来装已经选择过的题目
 					postArray.add(postValue);
 					radioGroup.clearCheck();
 					radioGroup.removeAllViews();
