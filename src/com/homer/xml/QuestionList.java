@@ -9,6 +9,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,8 +38,11 @@ public class QuestionList extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		//获取问卷传过来的所有问题，然后进行显示
-		Intent intent = new Intent();
-		intent.getExtras();
+//		Intent intent = new Intent();
+//		intent.getExtras();
+		Surveys temp_survey = (Surveys)getIntent().getSerializableExtra("survey");
+		String temp = temp_survey.getSurveyName();
+		
 		
 		setContentView(R.layout.qtaslist);
 		questionListView = (ListView)findViewById(R.id.questionlist);

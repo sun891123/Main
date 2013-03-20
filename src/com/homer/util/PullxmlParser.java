@@ -31,7 +31,6 @@ public class PullxmlParser {
     //用于保存xml解析获取的结果
     private Answer mAnswer = null;
     
-	private ArrayList<Question> mQuestionList = null;
 	private Question mQuestion = null;
 	
 	private ArrayList<Surveys> mSurveyList = null;
@@ -70,7 +69,7 @@ public class PullxmlParser {
 					} else if (startEntryElementFlag == true) {
 						String currentData = null;
 						if (DocumentCode.equals(kSurveyNameElementName)) {
-							mSurvey = new Surveys(null);
+							mSurvey = new Surveys();
 							currentData = xmlPullParser.nextText();
 							Log.v("Pull", currentData);
 							// Ã·»°Œ æÌid
@@ -142,72 +141,4 @@ public class PullxmlParser {
 		return mSurveyList;
 	}
 	
-	public ArrayList<Question> XmlParser(InputStream mInputStream) {
-
-		XmlPullParserFactory pullFactory;
-		XmlPullParser xmlPullParser;
-		try {
-			pullFactory = XmlPullParserFactory.newInstance();
-			xmlPullParser = pullFactory.newPullParser();
-
-			xmlPullParser.setInput(mInputStream, "UTF-8");
-
-			int mEvtentType = xmlPullParser.getEventType();
-
-			while (mEvtentType != XmlPullParser.END_DOCUMENT) {
-				String DocumentCode = null;
-				switch (mEvtentType) {
-
-				case XmlPullParser.START_DOCUMENT:
-					mQuestionList = new ArrayList<Question>();
-					break;
-				case XmlPullParser.START_TAG:
-
-					DocumentCode = xmlPullParser.getName();
-					System.out.println("DocumentCode:" + DocumentCode);
-
-					if (DocumentCode.equals("Question")) {
-						Log.e("Question", "Question");
-						mQuestion = new Question();
-					}
-					
-					if (DocumentCode.equals("QuestionID")) {
-						mQuestion.setQuestionID(xmlPullParser.nextText());
-					}
-					
-					if (DocumentCode.equals("QuestionContent")) {
-						mQuestion.setQuestionContent(xmlPullParser.nextText());
-					}
-					if (DocumentCode.equals("Options")) {
-						mQuestion.setOptions(xmlPullParser.nextText());
-					}
-
-//					if (DocumentCode.equals("AnswerID")) {
-//						mQuestion.setAnswerID(xmlPullParser.nextText());
-//					}
-//
-//					if (DocumentCode.equals("AnswerContent")) {
-//						mQuestion.setAnswerContent(xmlPullParser.nextText());
-//					}
-					break;
-
-				case XmlPullParser.END_TAG:
-
-					if (xmlPullParser.getName().equals("Question")) {
-						Log.e("End", "End    End   End");
-						System.out.println("End");
-						mQuestionList.add(mQuestion);
-					}
-					break;
-				}
-				mEvtentType = xmlPullParser.next();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return mQuestionList;
-	}
-
 }

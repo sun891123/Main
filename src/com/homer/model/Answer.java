@@ -1,6 +1,12 @@
 package com.homer.model;
 
-public class Answer {
+import java.io.Serializable;
+
+public class Answer implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String AnswerID;
 	private String AnswerContent;
 	public String getAnswerID() {

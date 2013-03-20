@@ -1,39 +1,18 @@
 package com.homer.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class Surveys implements Parcelable {
+public class Surveys implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String SurveyName;
 	private String SurveyID;
 	public  ArrayList<Question> aQuestionList;
-	
-	public int describeContents() {
-        return 0;
-    }
-	
-	@Override
-	public void writeToParcel(Parcel arg0, int arg1) {
-		// TODO Auto-generated method stub
-	}
-
-    public static final Parcelable.Creator<Surveys> CREATOR
-            = new Parcelable.Creator<Surveys>() {
-        public Surveys createFromParcel(Parcel in) {
-            return new Surveys(in);
-        }
-
-        public Surveys[] newArray(int size) {
-            return new Surveys[size];
-        }
-    };
-    
-    public Surveys(Parcel in) {
-    }
-	
+		
 	public String getSurveyName() {
 		return SurveyName;
 	}
