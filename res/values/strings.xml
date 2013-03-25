@@ -7,5 +7,6 @@
     <string name="next">下一题</string>
     <string name="prvate">上一题</string>
     <string name="finish">提交</string>
+    <string name="edittext">请输入内容!</string>
 
 </resources>

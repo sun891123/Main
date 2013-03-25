@@ -4,8 +4,27 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-    <Button
+           
+    <TextView android:id="@+id/questioncontent"
+        android:paddingLeft="15dip" android:paddingRight="15dip"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+    </TextView>
+    
+    <RadioGroup android:id="@+id/siglement_rg_subject"
+			android:paddingLeft="15dip" android:paddingRight="15dip"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+		</RadioGroup>
+    
+    
+    <LinearLayout
+        android:id="@+id/linearLayout_root"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+    </LinearLayout>
+    
+    
+     <Button
         android:id="@+id/prvatebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,15 +41,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/finish" />
-    
-    <TextView android:id="@+id/questioncontent"
-        android:paddingLeft="15dip" android:paddingRight="15dip"
-			android:layout_width="fill_parent" android:layout_height="wrap_content">
-    </TextView>
-    
-    <RadioGroup android:id="@+id/siglement_rg_subject"
-			android:paddingLeft="15dip" android:paddingRight="15dip"
-			android:layout_width="fill_parent" android:layout_height="wrap_content">
-		</RadioGroup>
     
 </LinearLayout>

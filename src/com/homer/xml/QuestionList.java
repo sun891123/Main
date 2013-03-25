@@ -30,6 +30,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewDebug.IntToString;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -48,10 +51,80 @@ public class QuestionList extends Activity {
 	ArrayList<Question> messageArrayList = null;
 	public String userIdString;
 	public String userNamesString;
-	
+	LinearLayout linearLayout_root = null;
 	
 	private ArrayList<PostValue> postArray = null;
 	PostValue postValue = null;
+	
+	
+	public void createsigle(Question mQuestion) {
+		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
+		questionContentTextView.setText(mQuestion.getQuestionContent());
+		RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+		if (index != 0) {
+			//进行上次选择的记录
+			if(postArray.size()<=index){
+	            postValue = new PostValue();
+	            postArray.add(postValue);
+			}else{
+				postValue=postArray.get(index);
+				postValue.answersArray.clear();
+			}
+			postValue.setOptions(mQuestion.getOptions());
+			postValue.setQuestionIdString(mQuestion.getQuestionID());
+			postValue.answersArray = new ArrayList<String>();
+			String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
+			postValue.answersArray.add(seletcs);
+			//然后用数组来装已经选择过的题目
+			postArray.add(postValue);
+		}
+		radioGroup.clearCheck();
+		radioGroup.removeAllViews();
+		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
+			Answer aAnswer = mQuestion.answerList.get(j);
+			RadioButton radioButton = new RadioButton(context);
+			radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
+			radioButton.setText(aAnswer.getAnswerContent());
+			radioGroup.addView(radioButton);
+		}
+	}
+	
+	
+	public void createdouble(Question mQuestion) {
+		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
+		questionContentTextView.setText(mQuestion.getQuestionContent());
+		RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+		radioGroup.clearCheck();
+		radioGroup.removeAllViews();
+		//进行上次选择的记录
+		if(postArray.size()<=index){
+            postValue = new PostValue();
+            postArray.add(postValue);
+		}else{
+			postValue=postArray.get(index);
+			postValue.answersArray.clear();
+		}
+		postValue.setOptions(mQuestion.getOptions());
+		postValue.setQuestionIdString(mQuestion.getQuestionID());
+		postValue.answersArray = new ArrayList<String>();
+		//然后用数组来装已经选择过的题目
+		postArray.add(postValue);
+		linearLayout_root.removeAllViews();
+		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
+			Answer aAnswer = mQuestion.answerList.get(j);
+			CheckBox checkBoxButton = new CheckBox(context);
+			checkBoxButton.setText(aAnswer.getAnswerContent());
+			checkBoxButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
+			linearLayout_root.addView(checkBoxButton);
+		}
+	}
+	
+	
+	public void createMessage(Question mQuestion) {
+		linearLayout_root.removeAllViews();
+		EditText mEditText = new EditText(context);
+		linearLayout_root.addView(mEditText);
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +133,9 @@ public class QuestionList extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.questionlist);
 		
-		postArray = new ArrayList<PostValue>();;
+		linearLayout_root = (LinearLayout) findViewById(R.id.linearLayout_root);
+		
+		postArray = new ArrayList<PostValue>();
 		index = 0;
 		
 		//获取问卷传过来的所有问题，然后进行显示
@@ -68,6 +143,8 @@ public class QuestionList extends Activity {
 		sigleArrayList = new ArrayList<Question>();
 		doubleArrayList = new ArrayList<Question>();
 		messageArrayList = new ArrayList<Question>();
+		
+		
 		for (int i = 0; i < survey.aQuestionList.size(); i ++) {
 			Question aQuestion = survey.aQuestionList.get(i);
 			if (aQuestion.getOptions().equalsIgnoreCase("0")) {
@@ -80,20 +157,11 @@ public class QuestionList extends Activity {
 		}
 		
 		//先显示单选的第一题
-		Question mQuestion=sigleArrayList.get(index);
-		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
-		questionContentTextView.setText(mQuestion.getQuestionContent());
-		RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
-		radioGroup.clearCheck();
-		radioGroup.removeAllViews();
-		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
-			Answer aAnswer = mQuestion.answerList.get(j);
-			RadioButton radioButton = new RadioButton(context);
-			radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
-			radioButton.setText(aAnswer.getAnswerContent());
-			radioGroup.addView(radioButton);
-		}
+		Question mQuestion = sigleArrayList.get(index);
+		this.createsigle(mQuestion);
+		//计数加1，从下一题开始
 		index ++;
+		
 		
 		//下一题按钮的动作
 		Button nextButton = (Button)findViewById(R.id.nextbutton);
@@ -102,62 +170,24 @@ public class QuestionList extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				//1、先显示所有单选题。Options  为0（单选框）
-				Button nextButton = (Button)findViewById(R.id.nextbutton);
-				Button prvatButton = (Button)findViewById(R.id.prvatebutton);
-				Button finishButton = (Button)findViewById(R.id.finishbutton);
-				if (index == 0) {
-					nextButton.setVisibility(View.VISIBLE);
-					finishButton.setVisibility(View.INVISIBLE);
-					prvatButton.setVisibility(View.INVISIBLE);
-				} else if (index == sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size()) {
-					nextButton.setVisibility(View.INVISIBLE);
-					finishButton.setVisibility(View.VISIBLE);
-					finishButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							//组织post的xml，然后异步上传
-						}
-					});
-				}
-				
-				
 				if (index < sigleArrayList.size()) {
-					Question mQuestion=sigleArrayList.get(index);
-					TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
-					questionContentTextView.setText(mQuestion.getQuestionContent());
-					RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
-					//进行上次选择的记录
-					if(postArray.size()<=index){
-                        postValue = new PostValue();
-                        postArray.add(postValue);
-					}else{
-						postValue=postArray.get(index);
-						postValue.answersArray.clear();
-					}
-					postValue.setOptions(mQuestion.getOptions());
-					postValue.setQuestionIdString(mQuestion.getQuestionID());
-					postValue.answersArray = new ArrayList<String>();
-					String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
-					postValue.answersArray.add(seletcs);
-					//然后用数组来装已经选择过的题目
-					postArray.add(postValue);
-					radioGroup.clearCheck();
-					radioGroup.removeAllViews();
-					for (int j = 0; j < mQuestion.answerList.size(); j ++) {
-						Answer aAnswer = mQuestion.answerList.get(j);
-						RadioButton radioButton = new RadioButton(context);
-						radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
-						radioButton.setText(aAnswer.getAnswerContent());
-						radioGroup.addView(radioButton);
-					}
-				} else if (index >= sigleArrayList.size() && index < doubleArrayList.size()) {
-				} else if (index >= doubleArrayList.size() && index < messageArrayList.size()) {
+					Question mQuestion = sigleArrayList.get(index);
+					createsigle(mQuestion);
+				} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
+					int temp_index = index - (sigleArrayList.size());
+					Log.e(TAG, "" + temp_index);
+					Question mQuestion = doubleArrayList.get(temp_index);
+					createdouble(mQuestion);
+				} else if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
+					int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
+					Question mQuestion = doubleArrayList.get(temp_index);
+					createMessage(mQuestion);
 				}
-				index ++;
+				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size())) {
+					index ++;
+				}
 			}
-		});		
+		});	
 		
 		
 		//上一题的按钮
@@ -169,33 +199,14 @@ public class QuestionList extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					index --;
+					if (index != 0) {
+						index --;
+					}
 					// TODO Auto-generated method stub
 					//如果当前是单选的话
 					if (index < sigleArrayList.size()) {
-						Question mQuestion=sigleArrayList.get(index);
-						RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
-						//进行上次选择的记录
-						if(postArray.size()<=index){
-	                        postValue = new PostValue();
-	                        postArray.add(postValue);
-						}else{
-							 postValue=postArray.get(index);
-							 postValue.answersArray.clear();
-						}
-						postValue.setOptions(mQuestion.getOptions());
-						postValue.setQuestionIdString(mQuestion.getQuestionID());
-						postValue.answersArray = new ArrayList<String>();
-						String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
-						postValue.answersArray.add(seletcs);
-						radioGroup.removeAllViews();
-						for (int j = 0; j < mQuestion.answerList.size(); j ++) {
-							Answer aAnswer = mQuestion.answerList.get(j);
-							RadioButton radioButton = new RadioButton(context);
-							radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
-							radioButton.setText(aAnswer.getAnswerContent());
-							radioGroup.addView(radioButton);
-						}
+						Question mQuestion = sigleArrayList.get(index);
+						createsigle(mQuestion);
 					} else if (index >= sigleArrayList.size() && index < doubleArrayList.size()) {
 						//如果当前是多选的话
 					} else if (index >= doubleArrayList.size() && index < messageArrayList.size()) {
@@ -206,22 +217,10 @@ public class QuestionList extends Activity {
 		}
 		
 		
+		//提交按钮
 		Button finishButton = (Button)findViewById(R.id.finishbutton);
 		if (index == 0) {
-			nextButton.setVisibility(View.VISIBLE);
-			finishButton.setVisibility(View.INVISIBLE);
-			prvatButton.setVisibility(View.INVISIBLE);
 		} else if (index == sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size()) {
-			nextButton.setVisibility(View.INVISIBLE);
-			finishButton.setVisibility(View.VISIBLE);
-			finishButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					//组织post的xml，然后异步上传
-				}
-			});
 		}
 		
 		//3、再显示所有多选题。Options  为1（多选框）
@@ -236,40 +235,6 @@ public class QuestionList extends Activity {
 		//记录用什么方式？
 		
 		//然后把记录好的id和文本上传到服务器
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//6、把用户选择好的答案ID或者留言内容上传到服务器，以xml文件格式（需要组织为xml格式），提交完就返回问卷列表
-//		Map<String, PostValue> map= new HashMap<String, PostValue>();
-//		//这里用for循环得到数组里面的所有元素
-//		PostValue quetion = new PostValue();
-//		map.put("question", quetion);
-//		//服务器请求路径  
-//        String urlPath = "http://ip地址:8080";  
-//        InputStream is = null;
-//		try {
-//			is = getInputStreamByPost(urlPath, map, "UTF-8");
-//		} catch (Exception e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}  
-//        byte[] data = null;
-//		try {
-//			data = readStream(is);
-//		} catch (Exception e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}  
-//        Log.i(TAG, new String(data));
-        //这里需要判断是否上传成功
-		//6
-		
 	}
 	
 	
