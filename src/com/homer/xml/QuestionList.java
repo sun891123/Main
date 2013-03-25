@@ -24,8 +24,10 @@ import android.R.bool;
 import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewDebug.IntToString;
@@ -117,15 +119,14 @@ public class QuestionList extends Activity {
 			checkBoxButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
 			linearLayout_root.addView(checkBoxButton);
 		}
-	}
-	
+	} 
 	
 	public void createMessage(Question mQuestion) {
 		linearLayout_root.removeAllViews();
 		EditText mEditText = new EditText(context);
 		linearLayout_root.addView(mEditText);
 	}
-	
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -219,6 +220,13 @@ public class QuestionList extends Activity {
 		
 		//Ã·Ωª∞¥≈•
 		Button finishButton = (Button)findViewById(R.id.finishbutton);
+		finishButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			}
+		});
 		if (index == 0) {
 		} else if (index == sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size()) {
 		}
