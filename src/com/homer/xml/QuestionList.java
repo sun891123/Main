@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.homer.model.PostValue;
@@ -34,10 +35,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewDebug.IntToString;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.homer.model.Answer;
@@ -57,34 +60,31 @@ public class QuestionList extends Activity {
 	RadioGroup radioGroup = null;
 	private ArrayList<PostValue> postArray = null;
 	
-	
+	//创建单选题目控件的方法
 	public void createsigle(Question mQuestion) {
 		linearLayout_root.removeAllViews();
 		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
-		questionContentTextView.setText(mQuestion.getQuestionContent());
-		PostValue tempPostValue = null;	
-		if (index != 0) {
-			tempPostValue = postArray.get(index - 1);
-			tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
-		}
-		
+		questionContentTextView.setText(mQuestion.getQuestionContent());			
 		radioGroup.clearCheck();
 		radioGroup.removeAllViews();
 		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
 			Answer aAnswer = mQuestion.answerList.get(j);
-			if (index != 0) {
-				Log.e(TAG, tempPostValue.isSelected.get(Integer.valueOf(aAnswer.getAnswerID())) + "");
-			}
 			RadioButton radioButton = new RadioButton(context);
 			radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
 			radioButton.setSelected(false);
 			radioButton.setText(aAnswer.getAnswerContent());
+			radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                 public void onCheckedChanged(RadioGroup group, int checkedId) {
+                	 Log.e(TAG, "" + index);
+                	 
+                 }
+           });
 			radioGroup.addView(radioButton);
 		}
 		linearLayout_root.addView(radioGroup);
 	}
 	
-	
+	//创建多选题目控件的方法
 	public void createdouble(Question mQuestion) {
 		linearLayout_root.removeAllViews();
 		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
@@ -94,10 +94,22 @@ public class QuestionList extends Activity {
 			CheckBox checkBoxButton = new CheckBox(context);
 			checkBoxButton.setText(aAnswer.getAnswerContent());
 			checkBoxButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
+			checkBoxButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+	            @Override 
+	            public void onCheckedChanged(CompoundButton buttonView, 
+	                    boolean isChecked) { 
+	            	Log.e(TAG, "" + buttonView.getId() + isChecked);
+	                // TODO Auto-generated method stub 
+	                if(isChecked){ 
+	                }else{ 
+	                } 
+	            } 
+	        });
 			linearLayout_root.addView(checkBoxButton);
 		}
 	} 
 	
+	//创建留言控件的方法
 	public void createMessage(Question mQuestion) {
 		linearLayout_root.removeAllViews();
 		EditText mEditText = new EditText(context);
@@ -105,6 +117,7 @@ public class QuestionList extends Activity {
 	}
 		
 	
+	//初始化为全部非选状态的post数据
 	@SuppressLint("UseSparseArrays")
 	public void addPostValue(Question aQuestion) {
 		PostValue temp_postPostValue = new PostValue();
@@ -119,7 +132,6 @@ public class QuestionList extends Activity {
 		postArray.add(temp_postPostValue);
 	}
 	
-	@SuppressLint("UseSparseArrays")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -127,18 +139,23 @@ public class QuestionList extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.questionlist);
 		
+		//得到linearlayot
 		linearLayout_root = (LinearLayout) findViewById(R.id.linearLayout_root);
+		//初始化单选组
 		radioGroup = new RadioGroup(context);
+		//创建装载问题记录数组
 		postArray = new ArrayList<PostValue>();
-		
+		//先显示第一个单选题
 		index = 0;
 		
 		//获取问卷传过来的所有问题，然后进行显示
 		Surveys survey = (Surveys)getIntent().getSerializableExtra("survey");
+		//将问题分类，单选数组、多选数组、留言数组
 		sigleArrayList = new ArrayList<Question>();
 		doubleArrayList = new ArrayList<Question>();
 		messageArrayList = new ArrayList<Question>();
 		
+		//进行分类，并且初始化非记录状态数组
 		for (int i = 0; i < survey.aQuestionList.size(); i ++) {
 			Question aQuestion = survey.aQuestionList.get(i);
 			if (aQuestion.getOptions().equalsIgnoreCase("0")) {
@@ -156,33 +173,43 @@ public class QuestionList extends Activity {
 		//先显示单选的第一题
 		Question mQuestion = sigleArrayList.get(index);
 		this.createsigle(mQuestion);
-		//计数加1，从下一题开始
-		index ++;
 		
 		
 		//下一题按钮的动作
 		Button nextButton = (Button)findViewById(R.id.nextbutton);
 		nextButton.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) { 
+				
 				if (index == 0) {
 					index ++;
 				}
 				// TODO Auto-generated method stub
 				//1、先显示所有单选题。Options  为0（单选框）
 				if (index < sigleArrayList.size()) {
+					//如果是单选，我先记录当前的题目选择状态
+					PostValue tempPostValue = postArray.get(index - 1);
+	           	 	tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
+	           	 	//然后创建下一个单选题
 					Question mQuestion = sigleArrayList.get(index);
 					createsigle(mQuestion);
 				} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
+					//如果是多选，我先记录当前题目的选择状态，这里怎么得到已选状态的checkbox呢？还有一个问题是，如果当前的题目不是多选，而是从单选切换过来的怎么办？
+					PostValue tempPostValue = postArray.get(index - 1);
+					//创建下一多选题
 					int temp_index = index - (sigleArrayList.size());
 					Log.e(TAG, "" + temp_index);
 					Question mQuestion = doubleArrayList.get(temp_index);
 					createdouble(mQuestion);
 				} else if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
+					//如果是留言，我先记录当前的题目的状态，这里怎么得到editingview的文本呢？还有一个问题是：如果当前题目不是留言，而是从多选题切换过来的怎么办？
+					PostValue tempPostValue = postArray.get(index - 1);
+					//创建下一留言题目
 					int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
 					Question mQuestion = doubleArrayList.get(temp_index);
 					createMessage(mQuestion);
 				}
+				//选择完后，就index++，表示下一题准备
 				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size() - 1)) {
 					index ++;
 				}
@@ -203,16 +230,25 @@ public class QuestionList extends Activity {
 						index --;
 					}
 					// TODO Auto-generated method stub
-					//如果当前是单选的话
 					if (index < sigleArrayList.size()) {
+						//如果是单选，我先记录当前的题目选择状态，还有一个问题是：如果当前是多选题切换过来的话呢？怎么办？
+						PostValue tempPostValue = postArray.get(index + 1);
+		           	 	tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
+		           	 	//创建上一单选题
 						Question mQuestion = sigleArrayList.get(index);
 						createsigle(mQuestion);
 					} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
+						//如果是多选，我先记录当前题目的选择状态，这里怎么得到已选状态的checkbox呢？还有一个问题是，如果当前的题目不是多选，而是从留言切换过来的怎么办？
+						PostValue tempPostValue = postArray.get(index - 1);
+						//创建下一多选题
 						int temp_index = index - (sigleArrayList.size());
 						Log.e(TAG, "" + temp_index);
 						Question mQuestion = doubleArrayList.get(temp_index);
 						createdouble(mQuestion);
 					} else if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
+						//如果是留言，我先记录当前的题目的状态，这里怎么得到editingview的文本呢？还有一个问题是：如果当前题目不是留言，而是从多选题切换过来的怎么办？
+						PostValue tempPostValue = postArray.get(index - 1);
+						//创建下一留言题目
 						int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
 						Question mQuestion = doubleArrayList.get(temp_index);
 						createMessage(mQuestion);
@@ -229,30 +265,10 @@ public class QuestionList extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				//这里组织xml文件，根据postArray里面的postvalue来做
 			}
 		});
-		if (index == 0) {
-		} else if (index == sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size()) {
-		}
-		
-		//3、再显示所有多选题。Options  为1（多选框）
-				
-				
-		//4、再显示留言题。Options  为2（文本留言）
-				
-				
-		//5、选择一题就切换到下一题，到最后一题就提示提交答案（切换和提交按钮）
-		
-		
-		//记录用什么方式？
-		
-		//然后把记录好的id和文本上传到服务器
 	}
-	
-	
-	
-	
-	
 	
 	//获取本机的IP地址
 	public String getLocalIpAddress() {  
