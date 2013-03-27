@@ -1,12 +1,23 @@
 package com.homer.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PostValue {
 	//问题类型
 	private String Options;
 	private String questionIdString;
 	public ArrayList<String> answersArray;
+	public HashMap<Integer,Boolean> isSelected;
+
+	
+	
+	public HashMap<Integer, Boolean> getIsSelected() {
+		return isSelected;
+	}
+	public void setIsSelected(HashMap<Integer, Boolean> isSelected) {
+		this.isSelected = isSelected;
+	}
 	public String getOptions() {
 		return Options;
 	}

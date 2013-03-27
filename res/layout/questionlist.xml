@@ -2,7 +2,7 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:orientation="vertical">
            
     <TextView android:id="@+id/questioncontent"
@@ -10,36 +10,44 @@
 			android:layout_width="fill_parent" android:layout_height="wrap_content">
     </TextView>
     
-    <RadioGroup android:id="@+id/siglement_rg_subject"
-			android:paddingLeft="15dip" android:paddingRight="15dip"
-			android:layout_width="fill_parent" android:layout_height="wrap_content">
-		</RadioGroup>
-    
     
     <LinearLayout
         android:id="@+id/linearLayout_root"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+		android:layout_weight="1"
         android:orientation="vertical" >
+        
     </LinearLayout>
     
-    
-     <Button
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+		android:layout_gravity="right|bottom">
+        <Button
         android:id="@+id/prvatebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/prvate" />
+        android:text="@string/prvate" 
+        android:layout_gravity="right|bottom"
+        />
 
     <Button
         android:id="@+id/nextbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/next" />
+        android:text="@string/next" 
+        android:layout_gravity="right|bottom"
+        />
     
     <Button
         android:id="@+id/finishbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/finish" />
+        android:text="@string/finish" 
+        android:layout_gravity="right|bottom"
+        />
+    </LinearLayout>
+     
     
 </LinearLayout>

@@ -22,6 +22,7 @@ import com.homer.model.Surveys;
 
 import android.R.bool;
 import android.R.integer;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +40,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.homer.xml.SingleTopicSelection;
 import com.homer.model.Answer;
 import com.homer.model.PostValue;
 
@@ -54,64 +54,41 @@ public class QuestionList extends Activity {
 	public String userIdString;
 	public String userNamesString;
 	LinearLayout linearLayout_root = null;
-	
+	RadioGroup radioGroup = null;
 	private ArrayList<PostValue> postArray = null;
-	PostValue postValue = null;
 	
 	
 	public void createsigle(Question mQuestion) {
+		linearLayout_root.removeAllViews();
 		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
 		questionContentTextView.setText(mQuestion.getQuestionContent());
-		RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
+		PostValue tempPostValue = null;	
 		if (index != 0) {
-			//进行上次选择的记录
-			if(postArray.size()<=index){
-	            postValue = new PostValue();
-	            postArray.add(postValue);
-			}else{
-				postValue=postArray.get(index);
-				postValue.answersArray.clear();
-			}
-			postValue.setOptions(mQuestion.getOptions());
-			postValue.setQuestionIdString(mQuestion.getQuestionID());
-			postValue.answersArray = new ArrayList<String>();
-			String seletcs = String.valueOf(radioGroup.getCheckedRadioButtonId());
-			postValue.answersArray.add(seletcs);
-			//然后用数组来装已经选择过的题目
-			postArray.add(postValue);
+			tempPostValue = postArray.get(index - 1);
+			tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
 		}
+		
 		radioGroup.clearCheck();
 		radioGroup.removeAllViews();
 		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
 			Answer aAnswer = mQuestion.answerList.get(j);
+			if (index != 0) {
+				Log.e(TAG, tempPostValue.isSelected.get(Integer.valueOf(aAnswer.getAnswerID())) + "");
+			}
 			RadioButton radioButton = new RadioButton(context);
 			radioButton.setId(Integer.parseInt(aAnswer.getAnswerID()));
+			radioButton.setSelected(false);
 			radioButton.setText(aAnswer.getAnswerContent());
 			radioGroup.addView(radioButton);
 		}
+		linearLayout_root.addView(radioGroup);
 	}
 	
 	
 	public void createdouble(Question mQuestion) {
+		linearLayout_root.removeAllViews();
 		TextView questionContentTextView = (TextView)findViewById(R.id.questioncontent);
 		questionContentTextView.setText(mQuestion.getQuestionContent());
-		RadioGroup radioGroup=(RadioGroup)findViewById(R.id.siglement_rg_subject);
-		radioGroup.clearCheck();
-		radioGroup.removeAllViews();
-		//进行上次选择的记录
-		if(postArray.size()<=index){
-            postValue = new PostValue();
-            postArray.add(postValue);
-		}else{
-			postValue=postArray.get(index);
-			postValue.answersArray.clear();
-		}
-		postValue.setOptions(mQuestion.getOptions());
-		postValue.setQuestionIdString(mQuestion.getQuestionID());
-		postValue.answersArray = new ArrayList<String>();
-		//然后用数组来装已经选择过的题目
-		postArray.add(postValue);
-		linearLayout_root.removeAllViews();
 		for (int j = 0; j < mQuestion.answerList.size(); j ++) {
 			Answer aAnswer = mQuestion.answerList.get(j);
 			CheckBox checkBoxButton = new CheckBox(context);
@@ -127,6 +104,22 @@ public class QuestionList extends Activity {
 		linearLayout_root.addView(mEditText);
 	}
 		
+	
+	@SuppressLint("UseSparseArrays")
+	public void addPostValue(Question aQuestion) {
+		PostValue temp_postPostValue = new PostValue();
+		temp_postPostValue.setOptions(aQuestion.getOptions());
+		temp_postPostValue.setQuestionIdString(aQuestion.getQuestionID());
+		HashMap<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+		for (int j = 0; j < aQuestion.answerList.size(); j ++) {
+			Answer aAnswer = aQuestion.answerList.get(j);
+			map.put(Integer.valueOf(aAnswer.getAnswerID()), false);
+		}
+		temp_postPostValue.setIsSelected(map);
+		postArray.add(temp_postPostValue);
+	}
+	
+	@SuppressLint("UseSparseArrays")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -135,8 +128,9 @@ public class QuestionList extends Activity {
 		setContentView(R.layout.questionlist);
 		
 		linearLayout_root = (LinearLayout) findViewById(R.id.linearLayout_root);
-		
+		radioGroup = new RadioGroup(context);
 		postArray = new ArrayList<PostValue>();
+		
 		index = 0;
 		
 		//获取问卷传过来的所有问题，然后进行显示
@@ -145,15 +139,17 @@ public class QuestionList extends Activity {
 		doubleArrayList = new ArrayList<Question>();
 		messageArrayList = new ArrayList<Question>();
 		
-		
 		for (int i = 0; i < survey.aQuestionList.size(); i ++) {
 			Question aQuestion = survey.aQuestionList.get(i);
 			if (aQuestion.getOptions().equalsIgnoreCase("0")) {
 				sigleArrayList.add(aQuestion);
+				addPostValue(aQuestion);
 			} else if (aQuestion.getOptions().equalsIgnoreCase("1")) {
 				doubleArrayList.add(aQuestion);
+				addPostValue(aQuestion);
 			} else if (aQuestion.getOptions().equalsIgnoreCase("2")) {
 				messageArrayList.add(aQuestion);
+				addPostValue(aQuestion);
 			}
 		}
 		
@@ -169,6 +165,9 @@ public class QuestionList extends Activity {
 		nextButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if (index == 0) {
+					index ++;
+				}
 				// TODO Auto-generated method stub
 				//1、先显示所有单选题。Options  为0（单选框）
 				if (index < sigleArrayList.size()) {
@@ -184,7 +183,7 @@ public class QuestionList extends Activity {
 					Question mQuestion = doubleArrayList.get(temp_index);
 					createMessage(mQuestion);
 				}
-				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size())) {
+				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size() - 1)) {
 					index ++;
 				}
 			}
@@ -208,10 +207,15 @@ public class QuestionList extends Activity {
 					if (index < sigleArrayList.size()) {
 						Question mQuestion = sigleArrayList.get(index);
 						createsigle(mQuestion);
-					} else if (index >= sigleArrayList.size() && index < doubleArrayList.size()) {
-						//如果当前是多选的话
-					} else if (index >= doubleArrayList.size() && index < messageArrayList.size()) {
-						//如果当前是留言的话
+					} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
+						int temp_index = index - (sigleArrayList.size());
+						Log.e(TAG, "" + temp_index);
+						Question mQuestion = doubleArrayList.get(temp_index);
+						createdouble(mQuestion);
+					} else if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
+						int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
+						Question mQuestion = doubleArrayList.get(temp_index);
+						createMessage(mQuestion);
 					}
 				}
 			});
