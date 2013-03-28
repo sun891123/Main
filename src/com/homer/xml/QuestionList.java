@@ -197,7 +197,6 @@ public class QuestionList extends Activity {
 		}
 		
 		
-		
 		//先显示单选的第一题
 		Question mQuestion = sigleArrayList.get(index);
 		this.createsigle(mQuestion);
