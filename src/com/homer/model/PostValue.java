@@ -8,14 +8,14 @@ public class PostValue {
 	private String Options;
 	private String questionIdString;
 	public ArrayList<String> answersArray;
-	public HashMap<Integer,Boolean> isSelected;
+	public HashMap<Integer,Object> isSelected;
 
 	
 	
-	public HashMap<Integer, Boolean> getIsSelected() {
+	public HashMap<Integer, Object> getIsSelected() {
 		return isSelected;
 	}
-	public void setIsSelected(HashMap<Integer, Boolean> isSelected) {
+	public void setIsSelected(HashMap<Integer, Object> isSelected) {
 		this.isSelected = isSelected;
 	}
 	public String getOptions() {
