@@ -46,6 +46,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.homer.model.Answer;
 import com.homer.model.PostValue;
@@ -82,7 +83,7 @@ public class QuestionList extends Activity {
 			radioButton.setText(aAnswer.getAnswerContent());
 			radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                  public void onCheckedChanged(RadioGroup group, int checkedId) {
-                	 Log.e(TAG, "" + index);
+//                	 Log.e(TAG, "" + index);
                 	 
                  }
            });
@@ -105,7 +106,7 @@ public class QuestionList extends Activity {
 	            @Override 
 	            public void onCheckedChanged(CompoundButton buttonView, 
 	                    boolean isChecked) { 
-	            	Log.e(TAG, "" + buttonView.getId() + isChecked);
+//	            	Log.e(TAG, "" + buttonView.getId() + isChecked);
 	                // TODO Auto-generated method stub 
 	                if(isChecked){ 
 	                }else{ 
@@ -214,6 +215,7 @@ public class QuestionList extends Activity {
 				// TODO Auto-generated method stub
 				//1、先显示所有单选题。Options  为0（单选框）
 				if (index < sigleArrayList.size()) {
+					Log.e(TAG, "index" + index);
 					//如果是单选，我先记录当前的题目选择状态
 					PostValue tempPostValue = postArray.get(index - 1);
 	           	 	tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
@@ -223,14 +225,17 @@ public class QuestionList extends Activity {
 				} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
 					//如果是多选，我先记录当前题目的选择状态，这里怎么得到已选状态的checkbox呢？还有一个问题是，如果当前的题目不是多选，而是从单选切换过来的怎么办？
 					int temp_index = index - (sigleArrayList.size());
-					Log.e(TAG, "" + temp_index);
+					Log.e(TAG, "temp_index" + temp_index + "index" + index);
 					Question aQuestion = doubleArrayList.get(temp_index);
 					PostValue tempPostValue = postArray.get(index - 1);
-					if (index == sigleArrayList.size()) {
+					if (index == (sigleArrayList.size())) {
 						tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
 					} else {
-						for (int j = 0; j < aQuestion.answerList.size(); j ++) {
-							Answer aAnswer = aQuestion.answerList.get(j);
+						//这里question是下一题的question啊！老大
+						//需要上一题的question
+						Question mqQuestion = doubleArrayList.get(temp_index - 1);
+						for (int j = 0; j < mqQuestion.answerList.size(); j ++) {
+							Answer aAnswer = mqQuestion.answerList.get(j);
 							CheckBox tempcBox = (CheckBox) findViewById(Integer.valueOf(aAnswer.getAnswerID()));
 							if (tempcBox.isChecked()) {
 								tempPostValue.isSelected.put(Integer.valueOf(aAnswer.getAnswerID()), true);
@@ -245,11 +250,11 @@ public class QuestionList extends Activity {
 				} else if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
 					//如果是留言，我先记录当前的题目的状态，这里怎么得到editingview的文本呢？还有一个问题是：如果当前题目不是留言，而是从多选题切换过来的怎么办？
 					int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
-					Log.e(TAG, "" + index + temp_index);
+					Log.e(TAG, "temp_index" + temp_index + "index" +  index);
 					PostValue tempPostValue = postArray.get(index - 1);
 					Question aQuestion = messageArrayList.get(temp_index);
 					if (index == (doubleArrayList.size() + sigleArrayList.size())) {
-						Question tempQuestion = doubleArrayList.get(temp_index - 1);
+						Question tempQuestion = doubleArrayList.get(doubleArrayList.size() - 1);
 						for (int j = 0; j < tempQuestion.answerList.size(); j ++) {
 							Answer aAnswer = tempQuestion.answerList.get(j);
 							CheckBox tempcBox = (CheckBox) findViewById(Integer.valueOf(aAnswer.getAnswerID()));
@@ -266,7 +271,7 @@ public class QuestionList extends Activity {
 					createMessage(aQuestion);
 				}
 				//选择完后，就index++，表示下一题准备
-				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size() - 1)) {
+				if (index != (sigleArrayList.size() + doubleArrayList.size() + messageArrayList.size())) {
 					index ++;
 				}
 			}
@@ -275,23 +280,21 @@ public class QuestionList extends Activity {
 		
 		//上一题的按钮
 		Button prvatButton = (Button)findViewById(R.id.prvatebutton);
-		if (index == 0) {
-		} else {
-			prvatButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					if (index != 0) {
-						index --;
-					}
+		prvatButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (index != 0) {
+					index --;
 					// TODO Auto-generated method stub
 					//1、先显示所有单选题。Options  为0（单选框）
-					if (index < sigleArrayList.size()) {
+					if (index < sigleArrayList.size() && index > 0) {
+						Log.e(TAG, "index" + index);
 						//如果是单选，我先记录当前的题目选择状态
 						PostValue tempPostValue = postArray.get(index + 1);
 		           	 	tempPostValue.isSelected.put(radioGroup.getCheckedRadioButtonId(), true);
 		           	 	//然后创建下一个单选题
-						Question mQuestion = sigleArrayList.get(index);
+						Question mQuestion = sigleArrayList.get(index - 1);
 						createsigle(mQuestion);
 					} else if (index >= sigleArrayList.size() && index < (doubleArrayList.size() + sigleArrayList.size())) {
 						//如果是多选，我先记录当前题目的选择状态，这里怎么得到已选状态的checkbox呢？还有一个问题是，如果当前的题目不是多选，而是从单选切换过来的怎么办？
@@ -337,8 +340,8 @@ public class QuestionList extends Activity {
 						createMessage(mQuestion);
 					}
 				}
-			});
-		}
+			}
+		});
 		
 		
 		//提交按钮
@@ -348,6 +351,29 @@ public class QuestionList extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				
+				if (index >= (doubleArrayList.size() + sigleArrayList.size()) && index < (doubleArrayList.size() + sigleArrayList.size() + messageArrayList.size())) {
+					//如果是留言，我先记录当前的题目的状态，这里怎么得到editingview的文本呢？还有一个问题是：如果当前题目不是留言，而是从多选题切换过来的怎么办？
+					int temp_index = index - (sigleArrayList.size() + doubleArrayList.size());
+					Log.e(TAG, "temp_index" + temp_index + "index" +  index);
+					PostValue tempPostValue = postArray.get(index - 1);
+					Question aQuestion = messageArrayList.get(temp_index);
+					if (index == (doubleArrayList.size() + sigleArrayList.size())) {
+						Question tempQuestion = doubleArrayList.get(doubleArrayList.size() - 1);
+						for (int j = 0; j < tempQuestion.answerList.size(); j ++) {
+							Answer aAnswer = tempQuestion.answerList.get(j);
+							CheckBox tempcBox = (CheckBox) findViewById(Integer.valueOf(aAnswer.getAnswerID()));
+							if (tempcBox.isChecked()) {
+								tempPostValue.isSelected.put(Integer.valueOf(aAnswer.getAnswerID()), true);
+							} else {
+								tempPostValue.isSelected.put(Integer.valueOf(aAnswer.getAnswerID()), false);
+							}
+						}
+					} else {
+						tempPostValue.isSelected.put(Integer.valueOf(aQuestion.getQuestionID()), mEditText.getText());
+					}
+				}
+				
 				//这里组织xml文件，根据postArray里面的postvalue来做
 				StringBuffer xml = new StringBuffer(); 
 		        
@@ -370,6 +396,7 @@ public class QuestionList extends Activity {
 							Map.Entry entry = (Map.Entry) iterator.next(); 
 							Object key = entry.getKey();  
 							Object val = entry.getValue();
+							//这里的val出错
 							if ((Boolean) val) {
 								xml.append("<Answer>" + key + "</Answer>");
 							}
@@ -392,119 +419,118 @@ public class QuestionList extends Activity {
 						xml.append("<Question ").append("Questionid=\"" + resultPostValue.getQuestionIdString() + "\">");
 						while (iterator.hasNext()) {  
 							Map.Entry entry = (Map.Entry) iterator.next(); 
-							Object key = entry.getKey();  
 							Object val = entry.getValue();
-							if ((Boolean) val) {
-								xml.append("<Answer" + "type=\"text\">" + ">" + key + "</Answer>");
-							}
+							Log.e(TAG, (String) val);
+							xml.append("<Answer" + "type=\"text\">" + " " + val.toString() + "</Answer>");
 						} 
 						xml.append("</Question>"); 
 					} 
 				}
 				xml.append("</Answers>");
-				byte[] xmlbyte = null;
-				try {
-					xmlbyte = xml.toString().getBytes("UTF-8");
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				URL url = null;
-				try {
-					url = new URL("http://localhost:8080/itcast/contanctmanage.do?method=readxml");
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				HttpURLConnection conn = null;
-				try {
-					conn = (HttpURLConnection) url.openConnection();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				conn.setConnectTimeout(6* 1000);  
-				conn.setDoOutput(true);//允许输出  
-				conn.setUseCaches(false);//不使用Cache  
-				try {
-					conn.setRequestMethod("POST");
-				} catch (ProtocolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}              
-				conn.setRequestProperty("Connection", "Keep-Alive");//维持长连接  
-				conn.setRequestProperty("Charset", "UTF-8");  
-				conn.setRequestProperty("Content-Length", String.valueOf(xmlbyte.length));  
-				conn.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");  
-				DataOutputStream outStream = null;
-				try {
-					outStream = new DataOutputStream(conn.getOutputStream());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				try {
-					outStream.write(xmlbyte);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}//发送xml数据  
-				try {
-					outStream.flush();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				try {
-					if (conn.getResponseCode() != 200) throw new RuntimeException("请求url失败");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}  
-				InputStream inputStream = null;
-				try {
-					inputStream = conn.getInputStream();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}//获取返回数据  				
-				byte[] buffer = null;
-				try {
-					buffer = new byte[inputStream.available()];
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					inputStream.read(buffer);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					inputStream.reset();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}//有时候会莫名其妙丢数据，测试发现加上这句以后正常
-				        try {
-							inputStream.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				try {
-					String jsonString = new String(buffer, "utf-8");
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					outStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Toast.makeText(context, xml.toString(), (int) 8.0).show();
+//				byte[] xmlbyte = null;
+//				try {
+//					xmlbyte = xml.toString().getBytes("UTF-8");
+//				} catch (UnsupportedEncodingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				URL url = null;
+//				try {
+//					url = new URL("http://localhost:8080/itcast/contanctmanage.do?method=readxml");
+//				} catch (MalformedURLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				HttpURLConnection conn = null;
+//				try {
+//					conn = (HttpURLConnection) url.openConnection();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				conn.setConnectTimeout(6* 1000);  
+//				conn.setDoOutput(true);//允许输出  
+//				conn.setUseCaches(false);//不使用Cache  
+//				try {
+//					conn.setRequestMethod("POST");
+//				} catch (ProtocolException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}              
+//				conn.setRequestProperty("Connection", "Keep-Alive");//维持长连接  
+//				conn.setRequestProperty("Charset", "UTF-8");  
+//				conn.setRequestProperty("Content-Length", String.valueOf(xmlbyte.length));  
+//				conn.setRequestProperty("Content-Type", "text/xml; charset=UTF-8");  
+//				DataOutputStream outStream = null;
+//				try {
+//					outStream = new DataOutputStream(conn.getOutputStream());
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				try {
+//					outStream.write(xmlbyte);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}//发送xml数据  
+//				try {
+//					outStream.flush();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				try {
+//					if (conn.getResponseCode() != 200) throw new RuntimeException("请求url失败");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}  
+//				InputStream inputStream = null;
+//				try {
+//					inputStream = conn.getInputStream();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}//获取返回数据  				
+//				byte[] buffer = null;
+//				try {
+//					buffer = new byte[inputStream.available()];
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				try {
+//					inputStream.read(buffer);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				try {
+//					inputStream.reset();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}//有时候会莫名其妙丢数据，测试发现加上这句以后正常
+//				        try {
+//							inputStream.close();
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//				try {
+//					String jsonString = new String(buffer, "utf-8");
+//				} catch (UnsupportedEncodingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				try {
+//					outStream.close();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
 		});
 	}
